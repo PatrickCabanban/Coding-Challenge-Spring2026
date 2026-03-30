@@ -2,6 +2,12 @@
 
 Spring 2026 recruitment coding challenge: implement a cross-process shared-memory buffer in Python.
 
+## Important Links
+
+- Fork this repository and complete the challenge in your own fork.
+- Submission Form: https://forms.gle/KJM6GWKq28sT7MgN9
+- Questions / Help Discord: https://discord.gg/3wNUqmGT5p
+
 ## What Applicants Work On
 
 Your task is to replace the starter in `solution.py` with a correct implementation of:
@@ -36,7 +42,10 @@ python score.py
 
 ## Applicant Workflow
 
+- Fork this repository and do your work in your own fork.
 - Edit `solution.py`.
+- Keep the existing file names and public bindings unchanged.
+- Put your entire implementation in `solution.py`.
 - Leave `tests/official/` alone when you want a real score.
 - Copy `tests/applicant/applicant_test_template.py` to something like `tests/applicant/test_my_solution.py`.
 - Add your own cases there as you build.
@@ -46,6 +55,10 @@ To run your own tests too:
 ```bash
 python score.py --include-applicant-tests
 ```
+
+When you are finished, submit your work here:
+
+https://forms.gle/KJM6GWKq28sT7MgN9
 
 ## Challenge Contract
 

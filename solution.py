@@ -55,7 +55,50 @@ class SharedBuffer(shared_memory.SharedMemory):
         - `cache_align` / `cache_size`: optional metadata-layout knobs; you may ignore
           them internally as long as validation and behavior remain correct
         """
-        raise NotImplementedError("TODO: implement SharedBuffer.__init__")
+        #initial validation error flags (out of bounds) 
+        if size <= 0:
+            raise ValueError("Buffer size must be positive")
+        if num_readers < 1:
+            raise ValueError("Must have at least one reader slot")
+        if not (reader == self._NO_READER or 0 <= reader < num_readers):
+            raise ValueError(f"Invalid reader index: {reader}")
+
+        #local vars
+        self.payload_size = size
+        self.num_readers = num_readers
+        self.reader_index = reader
+    
+        #Header = 1 writer pos + N reader positions + N active flags
+        #each item is an 8-byte int64
+        self.metadata_size = 8 + (num_readers * 8) + (num_readers * 8)
+        total_size = self.metadata_size + self.payload_size
+
+        super().__init__(name=name, create=create, size=total_size)
+
+        self.header_view = self.buf[:self.metadata_size]
+        self.data_view = self.buf[self.metadata_size:]
+
+        #builds array shape with type 64-bit int
+        #offset by writer and readers
+        self.shared_positions = np.ndarray(
+            shape = (1 + num_readers,), 
+            dtype = np.int64, 
+            buffer = self.header_view[0 : 8 + (num_readers * 8)]
+        ) 
+
+        #point in memory where flags appear
+        #offset by writer and readers
+        flag_start = 8 + (num_readers * 8)
+        self.shared_flags = np.ndarray(
+            shape = (num_readers,),
+            dtype = np.int64,
+            buffer = self.header_view[flag_start:]
+        )
+
+        #initializing
+        if create:
+            self.shared_positions.fill(0)
+            self.shared_flags.fill(0)
 
     def close(self) -> None:
         """
